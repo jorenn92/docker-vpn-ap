@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  gluetun:
+    privileged: true
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    network_mode: bridge
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8200:8000/tcp # Built-in HTTP control server
+    # command:
+    volumes:
+      - /usr/apps/vpn-ap/gluetun/:/gluetun
+    environment:
+      - OPENVPN_USER=###
+      - OPENVPN_PASSWORD=###
+      - VPNSP=fastestvpn
+      - COUNTRY=UK-Stream
+      - PROTOCOL=UDP
+      # Timezone for accurate logs times
+      - TZ=Europe/Brussels
+    restart: unless-stopped
+  docker-ap:
+    image: docker-ap
+    restart: unless-stopped
+    privileged: true
+    network_mode: service:gluetun
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup/systemd:/sys/fs/cgroup/systemd
+    environment:
+      - INTERFACE=wlp0s20f3
+      - HW_MODE=g
+      - OUTGOINGS=tun0,eth0
+      - CHANNEL=7
+      - WPA_PASSPHRASE=###
+      - SSID=nuc-ap
+      - SUBNET=192.168.2.0
+      - AP_ADDR=192.168.2.1
+      - DNS_ADDRESSES=1.1.1.1,1.0.0.1
