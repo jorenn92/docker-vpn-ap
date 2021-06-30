@@ -1,3 +1,5 @@
+Based on https://github.com/dannypv05261/docker-vpn-ap with a few fixes to get it working on my ubuntu intel nuc
+
 # docker-vpn-ap
 Let all devices connected to Wi-Fi access point share the VPN connection
 
